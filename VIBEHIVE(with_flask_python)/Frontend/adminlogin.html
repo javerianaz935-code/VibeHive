@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive | Admin Login</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="adminlogin.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        .login-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-vibe">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo-area h4 mb-0">
+                <img src="images/logo.png" alt="VibeHive Logo"  style="height:50px; width:auto; object-fit:contain;"> 
+            </div>
+            <a href="index.html" class="text-white mx-2"><i class="fas fa-home"></i> Back to Store</a>
+        </div>
+    </header>
+
+    <main class="container login-container py-5">
+        <div class="card login-card p-4">
+            
+            <h1 class="text-center h3 text-primary mb-4">Admin Login</h1>
+            <p class="text-muted text-center small mb-4">Owner login for product and order management.</p>
+
+            <form id="admin-login-form" onsubmit="simulateAdminLogin(event)">
+                <div class="form-group">
+                    <label for="admin-email">Username / Email</label>
+                    <input type="text" class="form-control" id="admin-email" required placeholder="Enter Admin Username or Email">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" class="form-control" id="admin-password" required placeholder="Password">
+                </div>
+                
+                <button type="submit" class="btn btn-block mt-4" style="background-color: var(--color-primary); color: white; padding: 12px;">
+                    <i class="fas fa-lock mr-2"></i> Access Dashboard
+                </button>
+
+                <!-- 👇 Added Register Option -->
+                <p class="text-center small mt-3 mb-0">
+                    New here? <a href="adminregister.html" style="color: var(--color-accent); font-weight: 500;">Register an account</a>
+                </p>
+            </form>
+
+        </div>
+    </main>
+
+    <div id="toast-notification" class="fixed-top alert d-none" style="top: 80px; right: 20px; width: 300px; z-index: 1000;">
+        <i class="mr-2 fas"></i> <span></span>
+    </div>
+    
+    <footer class="footer-vibe">
+        <div class="container py-3 text-center">
+            <p class="mb-0 small">&copy; 2025 VibeHive. Admin Module.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast-notification');
+        const toastText = toast.querySelector('span');
+        const toastIcon = toast.querySelector('i');
+        
+        toastText.textContent = message;
+        
+        if (type === 'error') {
+            toast.style.borderColor = 'red';
+            toastIcon.classList.remove('fa-check-circle');
+            toastIcon.classList.add('fa-exclamation-triangle');
+        } else {
+            toast.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-accent');
+            toastIcon.classList.remove('fa-exclamation-triangle');
+            toastIcon.classList.add('fa-check-circle');
+        }
+
+        toast.classList.remove('d-none');
+        setTimeout(() => {
+            toast.classList.add('d-none');
+        }, 3000);
+    }
+
+    function validateForm(form) {
+        let isValid = true;
+        const inputs = form.querySelectorAll('input[required]');
+        
+        inputs.forEach(input => {
+            input.classList.remove('is-invalid');
+            if (!input.value.trim()) {
+                input.classList.add('is-invalid');
+                isValid = false;
+            }
+        });
+        return isValid;
+    }
+
+    async function simulateAdminLogin(event) {
+        event.preventDefault(); 
+        const form = document.getElementById('admin-login-form');
+        if (!validateForm(form)) {
+            showToast("Please enter your username and password.", 'error');
+            return;
+        }
+
+        const username = document.getElementById('admin-email').value;
+        const password = document.getElementById('admin-password').value;
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast("Access Granted! Redirecting to Dashboard...", 'success');
+                localStorage.setItem('adminData', JSON.stringify(data.admin));
+                setTimeout(() => {
+                    window.location.href = "admindash.html";
+                }, 1500);
+            } else {
+                showToast(data.message || "Invalid credentials.", 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast("Server connection failed.", 'error');
+        }
+    }
+</script>
+
+</body>
+</html>

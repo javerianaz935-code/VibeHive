@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive | Track Order Status</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- VibeHive Muted Emerald & Gold Palette --- */
+        :root {
+            --color-primary: #1F453E;
+            --color-accent: #C2A562;
+            --color-background: #F8F8F8;
+            --color-highlight: #C2A562;
+            --color-text: #333333;
+            --color-shadow-primary: rgba(31, 69, 62, 0.4);
+            --font-family-sans: 'Arial', sans-serif;
+        }
+        /* Global Reset */
+        * { box-sizing: border-box; transition: all 0.3s ease-in-out; }
+        body { background-color: var(--color-background); color: var(--color-text); font-family: var(--font-family-sans); margin: 0; padding: 0; min-height: 100vh; }
+        /* Headers */
+        h1, h2, h3 { color: var(--color-primary); font-weight: 700; }
+        /* Header/Footer */
+        .header-vibe, .footer-vibe { background-color: var(--color-primary); color: white; padding: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-link { padding: 0.5rem 1rem; font-weight: 500; }
+        .nav-link:hover { color: var(--color-highlight) !important; }
+        .header-vibe a i { font-size: 1.25rem; }
+        .header-vibe a i:hover { color: var(--color-highlight); }
+        /* Cart Badge */
+        .cart-icon-container { position: relative; display: inline-block; }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background-color: var(--color-highlight); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; line-height: 1; min-width: 18px; text-align: center; font-weight: bold; display: none; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        /* Search */
+        .search-box input { border-radius: 20px; border: 1px solid #ccc; padding: 5px 15px; }
+        .search-box button { margin-left: -35px; z-index: 10; color: var(--color-highlight) !important; }
+        /* Buttons */
+        .btn-primary-vibe { background-color: var(--color-accent); color: var(--color-primary); border: 2px solid var(--color-accent); padding: 10px 25px; border-radius: 4px; text-transform: uppercase; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn-primary-vibe[style*="background-color: var(--color-primary)"] { color: white !important; }
+        .btn-primary-vibe:hover { background-color: #A08852; border-color: #A08852; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); color: var(--color-primary); }
+        .btn-primary-vibe[style*="background-color: var(--color-primary)"]:hover { background-color: #122B27 !important; border-color: #122B27 !important; color: white !important; }
+        .text-highlight { color: var(--color-highlight); font-weight: bold; letter-spacing: 0.5px; }
+        /* Toast */
+        #toast-notification { color: var(--color-primary) !important; background-color: #f0f0f0; border: 2px solid var(--color-accent); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; }
+        
+        /* --- ORDER TRACKING PAGE SPECIFIC STYLES --- */
+        .tracking-timeline { list-style: none; padding: 0; position: relative; }
+        .tracking-timeline:before { content: ''; position: absolute; top: 0; bottom: 0; width: 2px; background: #e0e0e0; left: 20px; margin-left: -1.5px; }
+        .timeline-item { position: relative; margin-bottom: 20px; padding-left: 50px; }
+        .timeline-status-icon { position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; color: white; text-align: center; line-height: 40px; font-size: 1.2rem; z-index: 1; }
+        .timeline-item.completed .timeline-status-icon { background-color: var(--color-primary); }
+        .timeline-item.active .timeline-status-icon { background-color: var(--color-highlight); box-shadow: 0 0 0 5px rgba(194, 165, 98, 0.5); }
+
+        /* --- AI Chatbot Styles --- */
+        @keyframes pulse-acorn { 0% { box-shadow: 0 0 0 0 rgba(194, 165, 98, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(194, 165, 98, 0); } 100% { box-shadow: 0 0 0 0 rgba(194, 165, 98, 0); } }
+        .chatbot-float-icon { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; border-radius: 50%; background-color: var(--color-accent); color: var(--color-primary); text-align: center; line-height: 65px; font-size: 28px; cursor: pointer; z-index: 1000; border: 3px solid white; animation: pulse-acorn 2s infinite ease-in-out; }
+        .chatbot-modal { display: none; /* START HIDDEN */ position: fixed; bottom: 110px; right: 30px; width: 300px; height: 400px; background-color: white; border: 1px solid var(--color-primary); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1000; overflow: hidden; flex-direction: column; }
+        .chatbot-header { background-color: var(--color-primary); color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-close { cursor: pointer; font-size: 1.2rem; }
+        .chatbot-body { flex-grow: 1; padding: 10px; overflow-y: auto; font-size: 0.9rem; }
+        .chatbot-input-area { display: flex; border-top: 1px solid #eee; padding: 10px; background-color: #f0f0f0; }
+        .chatbot-input-area input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 5px 15px; margin-right: 5px; }
+        .chatbot-input-area button { background-color: var(--color-accent); color: white; border: none; border-radius: 20px; padding: 0 15px; }
+        /* Footer */
+        .footer-vibe { font-size: 0.9rem; }
+        .footer-vibe a { color: white; text-decoration: none; }
+        .footer-vibe a:hover { color: var(--color-highlight); }
+        /* Responsiveness */
+        @media (max-width: 768px) { h1 { font-size: 2rem; } .header-vibe .search-box { display: none !important; } .header-vibe .logo-area { font-size: 1.2rem; } .chatbot-float-icon { width: 50px; height: 50px; line-height: 50px; font-size: 22px; bottom: 20px; right: 20px; } .chatbot-modal { width: 90%; right: 5%; bottom: 80px; height: 300px; } }
+    </style>
+</head>
+<body>
+
+    <header class="header-vibe">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo-area h4 mb-0">
+                <img src="images/logo.png" alt="VibeHive Logo"  style="height:50px; width:auto; object-fit:contain;"> 
+            </div>
+            <nav class="d-none d-md-flex align-items-center">
+                <a class="nav-link text-white mx-2" href="index.html">Home</a>
+                <a class="nav-link text-white mx-2" href="product.html">Product</a>
+                <a class="nav-link text-white mx-2" href="about.html">About</a>
+                <a class="nav-link text-white mx-2" href="contact.html">Contact</a>
+            </nav>
+            <div class="d-flex align-items-center">
+                <a href="#" class="text-white mx-2"><i class="fas fa-heart"></i></a>
+                <a href="checkout.html" class="text-white mx-2 cart-icon-container">
+                    <i class="fas fa-shopping-cart" id="cart-icon"></i>
+                    <span id="cart-badge" class="cart-badge">0</span>
+                </a>
+                <a href="login.html" class="text-white mx-2"><i class="fas fa-user-circle"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container py-5">
+        <div class="card p-5 mx-auto" style="max-width: 900px;">
+            <h1 class="text-center text-primary mb-4">Track Your Order</h1>
+            
+            <div class="alert alert-info text-center" style="background-color: var(--color-background); border: 1px solid var(--color-highlight);">
+                <p class="mb-1 h5 text-primary">Order ID: <span class="text-highlight">VH-2025-00103</span></p>
+                <p class="mb-0 small text-muted">Placed on: 2025-10-26</p>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h2 class="h6 text-primary mb-3">Order Summary</h2>
+                    <ul class="list-unstyled small text-muted">
+                        <li>Items: Elegant Dress, Loafers (2 items)</li>
+                        <li>Shipping to: Bahawalnagar, Pakistan</li>
+                        <li>Total Paid: <span class="text-highlight">$265.00</span></li>
+                        <li>Est. Delivery: Nov 2 - Nov 4</li>
+                    </ul>
+                    <a href="#" class="btn btn-link p-0" style="color: var(--color-primary);" onclick="showToast('Loading detailed summary...', 'success')">View Full Details</a>
+                </div>
+                
+                <div class="col-lg-8">
+                    <h2 class="h6 text-primary mb-3">Order Status Timeline</h2>
+                    <ul id="tracking-steps" class="tracking-timeline">
+                        </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="product.html" class="btn btn-primary-vibe">Continue Shopping</a>
+                <a href="contact.html" class="btn btn-outline-secondary ml-3">Need Help?</a>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-notification" class="fixed-top alert d-none" style="top: 80px; right: 20px; width: 300px; z-index: 1000;">
+        <i class="mr-2 fas"></i> <span></span>
+    </div>
+
+    <div id="chatbot-modal" class="chatbot-modal"> <div class="chatbot-header">
+            <span>AI Chatbot</span>
+            <i class="fas fa-times chatbot-close" onclick="toggleChatbot()"></i> 
+        </div>
+        <div class="chatbot-body">
+             <div class="text-muted mb-2">Hello! How can I assist you?</div>
+             </div>
+        <div class="chatbot-input-area">
+            <input type="text" placeholder="Type a message..." id="chatbot-input">
+            <button onclick="simulateChatResponse()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+    </div>
+    <div id="chatbot-icon" class="chatbot-float-icon" onclick="toggleChatbot()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+    
+    <footer class="footer-vibe mt-5">
+        <div class="container py-4">
+            </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // --- Global State ---
+        let cartItemCount = parseInt(sessionStorage.getItem('vibeHiveCartCount')) || 0;
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', initializeTrackingPage);
+
+        // Simulated order steps
+        const ORDER_STATUS_MOCK_DATA = [
+            { name: "Order Placed", date: "2025-10-26 10:30 AM", icon: "fas fa-check", completed: true },
+            { name: "Payment Confirmed", date: "2025-10-26 10:35 AM", icon: "fas fa-credit-card", completed: true },
+            { name: "Preparation & Packaging", date: "2025-10-26 11:00 AM", icon: "fas fa-box-open", completed: true },
+            { name: "Shipped (In Transit)", date: "2025-10-27 09:00 AM", icon: "fas fa-truck", completed: false }, // This is the active one
+            { name: "Out for Delivery", date: "N/A", icon: "fas fa-people-carry", completed: false },
+            { name: "Delivered", date: "N/A", icon: "fas fa-home", completed: false }
+        ];
+
+        function initializeTrackingPage() {
+            updateCartBadge();
+            renderTrackingTimeline();
+
+            // Chatbot Enter key listener
+             const chatbotInput = document.getElementById('chatbot-input');
+             if (chatbotInput) {
+                chatbotInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        simulateChatResponse();
+                    }
+                 });
+             }
+        }
+
+        function renderTrackingTimeline() {
+            const container = document.getElementById('tracking-steps');
+            if (!container) return; // Prevent errors if element doesn't exist
+            container.innerHTML = ''; // Clear previous steps
+
+            let currentActiveFound = false;
+            const currentStatusIndex = 3; // Index for 'Shipped'
+
+            ORDER_STATUS_MOCK_DATA.forEach((step, index) => {
+                const isCompleted = index < currentStatusIndex;
+                const isActive = index === currentStatusIndex;
+                
+                let itemClass = '';
+                if (isActive) {
+                    itemClass = 'active';
+                    currentActiveFound = true;
+                } else if (isCompleted) {
+                    itemClass = 'completed';
+                }
+
+                const dateDisplay = step.date !== 'N/A' ? `(${step.date})` : '';
+
+                const html = `
+                    <li class="timeline-item ${itemClass}">
+                        <div class="timeline-status-icon"><i class="${step.icon}"></i></div>
+                        <h6 class="text-primary mb-1">${step.name}</h6>
+                        <p class="small text-muted mb-0">${dateDisplay}</p>
+                    </li>
+                `;
+                container.innerHTML += html;
+            });
+        }
+        
+        // --- Utility Functions ---
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            if (badge) { 
+                badge.textContent = cartItemCount;
+                badge.style.display = cartItemCount > 0 ? 'block' : 'none';
+            }
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            if (!toast) return;
+
+            const toastText = toast.querySelector('span');
+            const toastIcon = toast.querySelector('i');
+            const colorAccent = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim();
+
+            toastText.textContent = message;
+            toast.style.borderColor = '';
+            toastIcon.className = 'mr-2 fas'; // Reset icon classes
+
+            if (type === 'error') {
+                toast.style.borderColor = 'red';
+                toastIcon.classList.add('fa-exclamation-triangle');
+            } else {
+                toast.style.borderColor = colorAccent;
+                toastIcon.classList.add('fa-check-circle');
+            }
+
+            toast.classList.remove('d-none');
+            setTimeout(() => { toast.classList.add('d-none'); }, 3000);
+        }
+
+        // --- CORE CHATBOT FUNCTIONS (Final Fix) ---
+        function toggleChatbot() {
+            const modal = document.getElementById('chatbot-modal');
+            if (modal) {
+                // Toggles between 'flex' (visible) and 'none' (hidden)
+                modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+            }
+        }
+
+        function simulateChatResponse() {
+            const input = document.getElementById('chatbot-input');
+            const body = document.querySelector('.chatbot-body');
+            const userMessage = input.value.trim();
+
+            if (userMessage === '') return;
+
+            const colorPrimary = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+            body.innerHTML += `<div class="text-right mb-2" style="color: ${colorPrimary}">You: ${userMessage}</div>`;
+
+            const botResponse = "Query acknowledged. I am ready for general support questions or guiding you through the site!";
+            setTimeout(() => {
+                body.innerHTML += `<div class="text-left mb-2 text-muted">Bot: ${botResponse}</div>`;
+                body.scrollTop = body.scrollHeight; 
+            }, 500);
+
+            input.value = '';
+            body.scrollTop = body.scrollHeight;
+        }
+    </script>
+</body>
+</html>

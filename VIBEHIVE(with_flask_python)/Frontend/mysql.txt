@@ -1,0 +1,79 @@
+DROP DATABASE vibehive;
+CREATE DATABASE vibehive;
+USE vibehive;
+
+CREATE TABLE price_alerts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    demand_price DECIMAL(10,2) NOT NULL,
+    notified TINYINT DEFAULT 0
+);
+
+-- Admin Table
+CREATE TABLE admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customers Table
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Products Table
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(150) NOT NULL,
+    main_category ENUM('Clothing', 'Footwear') NOT NULL,
+    sub_category ENUM('Mens', 'Womens', 'Kids') NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    image_path VARCHAR(255),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Orders Table (Updated)
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    total_amount DECIMAL(10,2),
+    order_status ENUM('Pending', 'Shipped', 'Completed', 'Cancelled') DEFAULT 'Pending',
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    customer_id INT,
+    shipping_address VARCHAR(255),
+    payment_method VARCHAR(50),
+    phone VARCHAR(20),
+
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+select * from customers;
+

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive - My Profile</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #1F453E;
+            --color-accent: #ffb100;
+            --color-bg-light: #f9f9fb;
+        }
+
+        body {
+            background-color: var(--color-bg-light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .profile-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .order-table th {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .badge-pending { background-color: #ffc107; }
+        .badge-shipped { background-color: #17a2b8; }
+        .badge-completed { background-color: #28a745; }
+        .badge-cancelled { background-color: #dc3545; }
+
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-cancel:hover {
+            background-color: #b52c3a;
+        }
+
+        .logout-btn {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        .logout-btn:hover {
+            background-color: #e2a100;
+        }
+    </style>
+</head>
+<body>
+<header class="header-vibe">
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <div class="logo-area h4 mb-0">
+            <img src="images/logo.png" alt="VibeHive Logo"
+                style="height:50px; width:auto; object-fit:contain;">
+        </div>
+
+        <nav class="d-none d-md-flex align-items-center">
+            <a class="nav-link text-white mx-2" href="index.html">Home</a>
+
+            <div class="nav-item dropdown mx-2">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="productDropdown"
+                    data-toggle="dropdown">
+                    Products
+                </a>
+
+                <div class="dropdown-menu p-3" id="navbar-category-list"
+                    style="min-width:260px; max-height:400px; overflow-y:auto;">
+                    <span class="text-muted small">Loading...</span>
+                </div>
+            </div>
+
+            <a class="nav-link text-white mx-2" href="about.html">About</a>
+            <a class="nav-link text-white mx-2" href="contact.html">Contact</a>
+        </nav>
+
+        <div class="d-flex align-items-center">
+            <div class="search-box mx-3 d-flex align-items-center">
+                <input type="text" id="productSearch" placeholder="Search products..." />
+                <div id="searchResults"
+                    class="position-absolute bg-white shadow p-3"
+                    style="top:45px;width:320px;display:none;z-index:999;"></div>
+                <button class="btn btn-sm btn-link">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <a href="wishlist.html" class="text-white mx-2">
+                <i class="fas fa-heart"></i>
+            </a>
+
+            <a href="checkout.html" class="text-white mx-2 cart-icon-container">
+                <i class="fas fa-shopping-cart" id="cart-icon"></i>
+                <span id="cart-badge" class="cart-badge">0</span>
+            </a>
+
+            <a href="#" id="profile-link" class="text-white mx-2">
+                <i class="fas fa-user-circle"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+
+<div class="container my-5">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <h2 style="color: white;">Welcome, <span id="customer-name">Customer</span> 👋</h2>
+        <p>Your order history and tracking details</p>
+        <button class="btn logout-btn mt-2" onclick="logoutCustomer()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0 text-primary"><i class="fas fa-box"></i> My Orders</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered order-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-body">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Loading your orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast-notification" class="position-fixed d-none"
+     style="top: 20px; right: 20px; background: #fff; border: 2px solid var(--color-accent); padding: 10px 15px; border-radius: 10px; z-index: 1050;">
+    <i class="fas fa-check-circle mr-2"></i><span></span>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', loadCustomerProfile);
+
+function loadCustomerProfile() {
+    const customer = JSON.parse(localStorage.getItem('loggedInCustomer'));
+    if (!customer) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById('customer-name').textContent = customer.name;
+
+    // ✅ FIXED: Use /api/orders and correct parameter name
+    fetch(`http://localhost:5000/api/orders?customerId=${customer.id}`)
+        .then(res => res.json())
+        .then(orders => {
+            const tbody = document.getElementById('orders-body');
+            tbody.innerHTML = '';
+
+            if (!orders || orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No orders found.</td></tr>`;
+                return;
+            }
+
+            orders.forEach(order => {
+                const status = order.order_status || '';
+                let badgeClass = '';
+                switch(status.toLowerCase()) {
+                    case 'pending': badgeClass = 'badge-pending'; break;
+                    case 'shipped': badgeClass = 'badge-shipped'; break;
+                    case 'completed': badgeClass = 'badge-completed'; break;
+                    case 'cancelled': badgeClass = 'badge-cancelled'; break;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${order.order_id}</td>
+                        <td>${order.product_name}</td>
+                        <td>${order.quantity}</td>
+                        <td>Rs. ${order.total_amount}</td>
+                        <td><span class="badge ${badgeClass}">${status}</span></td>
+                        <td>
+                            ${status.toLowerCase() === 'pending' 
+                                ? `<button class="btn btn-sm btn-cancel" onclick="cancelOrder(${order.order_id})">Cancel</button>` 
+                                : '<span class="text-muted">-</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Error loading orders", "error");
+        });
+}
+
+function cancelOrder(orderId) {
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+
+    fetch(`http://localhost:5000/api/orders/${orderId}/cancel`, { method: 'PUT' })
+        .then(res => res.json())
+        .then(data => {
+            showToast(data.message || "Order cancelled successfully!");
+            loadCustomerProfile(); // Refresh table
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Error cancelling order", "error");
+        });
+}
+
+function logoutCustomer() {
+    localStorage.removeItem('loggedInCustomer');
+    showToast("Logged out successfully!");
+    setTimeout(() => window.location.href = "index.html", 1000);
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast-notification');
+    const icon = toast.querySelector('i');
+    const text = toast.querySelector('span');
+
+    text.textContent = message;
+    icon.className = type === 'error'
+        ? 'fas fa-exclamation-triangle text-danger mr-2'
+        : 'fas fa-check-circle text-success mr-2';
+
+    toast.classList.remove('d-none');
+    setTimeout(() => toast.classList.add('d-none'), 3000);
+}
+</script>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileLink = document.getElementById('profile-link');
+            const loggedInCustomer = JSON.parse(localStorage.getItem('loggedInCustomer'));
+
+            // 🧭 If customer logged in → profile page; otherwise → login
+            if (loggedInCustomer) {
+                profileLink.setAttribute('href', 'customer_profile.html');
+            } else {
+                profileLink.setAttribute('href', 'login.html');
+            }
+        });
+    </script>
+
+    <script src="dropdown_search.js"></script>
+    <script src="index.js"></script>
+<footer class="footer-vibe mt-5">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5 class="text-white">Contact Us</h5>
+                <p class="small">Anarkali Bazar, Bahawalnagar, Pakistan</p>
+                <p class="small">awaiswattu@gmail.com</p>
+                <p class="small">+92 42 111 647 428</p>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h5 class="text-white">Information</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h5 class="text-white">Customer Services</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Order Tracking</a></li>
+                    <li><a href="#">Return & Exchange Policy</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="text-center mb-0 small mt-3">
+            &copy; 2025 VibeHive. All rights reserved.
+        </p>
+    </div>
+</footer>
+</body>
+
+
+
+</html>

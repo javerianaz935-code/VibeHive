@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive | Login or Register</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Specific CSS for centering the login form */
+        .login-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+        }
+
+        /* Style for required fields */
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-vibe">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo-area h4 mb-0">
+                <img src="images/logo.png" alt="VibeHive Logo"  style="height:50px; width:auto; object-fit:contain;"> 
+            </div>
+            <a href="index.html" class="text-white mx-2"><i class="fas fa-home"></i> Home</a>
+        </div>
+    </header>
+
+    <main class="container login-container py-5">
+        <div class="card login-card p-4">
+
+            <h1 id="form-title" class="text-center h3 text-primary mb-4">Customer Login</h1>
+
+            <form id="login-form" onsubmit="simulateLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" class="form-control" id="login-email" required placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" class="form-control" id="login-password" required placeholder="Password">
+                </div>
+
+                <button type="submit" class="btn btn-primary-vibe btn-block mt-4"
+                    style="background-color: var(--color-primary); color: white;">
+                    Login
+                </button>
+            </form>
+
+            <form id="register-form" onsubmit="simulateRegister(event)" style="display: none;">
+                <div class="form-group">
+                    <label for="reg-name">Name</label>
+                    <input type="text" class="form-control" id="reg-name" required placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" class="form-control" id="reg-email" required placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" class="form-control" id="reg-password" required minlength="6"
+                        placeholder="Minimum 6 characters">
+                </div>
+                <div class="form-group">
+                    <label for="reg-phone">Phone (Optional for now)</label>
+                    <input type="tel" class="form-control" id="reg-phone" placeholder="Contact number">
+                </div>
+
+                <button type="submit" class="btn btn-primary-vibe btn-block mt-4">
+                    Register
+                </button>
+            </form>
+
+            <hr class="my-3">
+
+            <div class="text-center small">
+                <span id="toggle-message">New customer?</span>
+                <a href="#" id="toggle-link" onclick="toggleForm(event)">Create an Account</a>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast-notification" class="fixed-top alert d-none"
+        style="top: 80px; right: 20px; width: 300px; z-index: 1000;">
+        <i class="mr-2 fas"></i> <span></span>
+    </div>
+
+    <footer class="footer-vibe">
+        <div class="container py-3 text-center">
+            <p class="mb-0 small">&copy; 2025 VibeHive. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- Utility Functions ---
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const toastText = toast.querySelector('span');
+            const toastIcon = toast.querySelector('i');
+
+            toastText.textContent = message;
+
+            if (type === 'error') {
+                toast.style.borderColor = 'red';
+                toastIcon.classList.remove('fa-check-circle');
+                toastIcon.classList.add('fa-exclamation-triangle');
+            } else {
+                toast.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-accent');
+                toastIcon.classList.remove('fa-exclamation-triangle');
+                toastIcon.classList.add('fa-check-circle');
+            }
+
+            toast.classList.remove('d-none');
+            setTimeout(() => {
+                toast.classList.add('d-none');
+            }, 3000);
+        }
+
+        function validateForm(form) {
+            let isValid = true;
+            const inputs = form.querySelectorAll('input[required]');
+
+            inputs.forEach(input => {
+                input.classList.remove('is-invalid');
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else if (input.type === 'email' && !input.value.includes('@')) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else if (input.type === 'password' && input.value.length < 6) {
+                    // Check min length for registration password
+                    if (form.id === 'register-form') {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                }
+            });
+            return isValid;
+        }
+
+        // --- Core Functions (Simulations) ---
+
+
+        // --- LOGIN: call backend and persist loggedInCustomer properly ---
+        async function simulateLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                showToast("Please enter email and password.", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/customer/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showToast(data.message || "Invalid credentials!", 'error');
+                    return;
+                }
+
+                // Backend returns data.customer with fields customer_id and full_name
+                const c = data.customer || {};
+                // const loggedInCustomer = {
+                //     id: c.customer_id,
+                //     name: c.full_name,
+                //     email: c.email
+                // };
+
+                const loggedInCustomer = { id: c.customer_id, name: c.full_name, email: c.email };
+
+
+                // Persist user (production: you may want to store token/session instead)
+                localStorage.setItem('loggedInCustomer', JSON.stringify(loggedInCustomer));
+
+                showToast("Login successful! Redirecting...", 'success');
+
+                // Redirect to profile after short delay
+                setTimeout(() => window.location.href = 'index.html', 800);
+            } catch (err) {
+                console.error('Login error:', err);
+                showToast("Server connection failed.", "error");
+            }
+        }
+
+        // --- REGISTER: call backend then redirect to login ---
+        async function simulateRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const phone = document.getElementById('reg-phone').value.trim();
+
+            if (!name || !email || !password) {
+                showToast("Please complete required fields.", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/customer/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name: name, email, password, phone })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showToast(data.message || "Registration failed!", "error");
+                    return;
+                }
+
+                showToast("Registration successful! Please log in.", 'success');
+
+                // Switch to login form and pre-fill email for convenience
+                setTimeout(() => {
+                    toggleForm(null, 'login');
+                    document.getElementById('login-email').value = email;
+                }, 900);
+
+            } catch (err) {
+                console.error('Register error:', err);
+                showToast("Server connection failed.", "error");
+            }
+        }
+
+
+
+        // --- Frontend Toggle Function (Usability Feature) ---
+        function toggleForm(event, target = null) {
+            if (event) event.preventDefault();
+
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const title = document.getElementById('form-title');
+            const toggleLink = document.getElementById('toggle-link');
+            const toggleMsg = document.getElementById('toggle-message');
+
+            const isLoggingIn = target === 'login' || loginForm.style.display === 'none';
+
+            if (isLoggingIn) {
+                // Switch to Login
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                title.textContent = "Customer Login";
+                toggleMsg.textContent = "New customer?";
+                toggleLink.textContent = "Create an Account";
+            } else {
+                // Switch to Register
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                title.textContent = "Create an Account";
+                toggleMsg.textContent = "Already have an account?";
+                toggleLink.textContent = "Log In";
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive - Style your life, your way</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="index.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="header-vibe">
+        <div class="container d-flex justify-content-between align-items-center">
+
+            <div class="logo-area h4 mb-0">
+                <img src="images/logo.png" alt="VibeHive Logo"  style="height:50px; width:auto; object-fit:contain;"> 
+            </div>
+
+            <!-- this code is for nav bar categories show on product drop down -->
+            <nav class="d-none d-md-flex align-items-center">
+                <a class="nav-link text-white mx-2" href="index.html">Home</a>
+
+                <!-- PRODUCT DROPDOWN -->
+                <div class="nav-item dropdown mx-2">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="productDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Products
+                    </a>
+
+                    <div class="dropdown-menu p-3" id="navbar-category-list"
+                        style="min-width: 260px; max-height: 400px; overflow-y: auto;">
+                        <!-- Categories load here -->
+                        <span class="text-muted small">Loading...</span>
+                    </div>
+                </div>
+
+                <a class="nav-link text-white mx-2" href="about.html">About</a>
+                <a class="nav-link text-white mx-2" href="contact.html">Contact</a>
+            </nav>
+
+            <div class="d-flex align-items-center">
+                <div class="search-box mx-3 d-flex align-items-center">
+                    <!-- search -->
+                    <input type="text" id="productSearch" placeholder="Search products..." autocomplete="off" />
+
+                    <div id="searchResults" class="position-absolute bg-white shadow p-3"
+                        style="top:45px; width:320px; display:none; z-index:999;">
+                    </div>
+
+                    <button class="btn btn-sm btn-link">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <a href="wishlist.html" class="text-white mx-2"><i class="fas fa-heart"></i></a>
+                <a href="checkout.html" class="text-white mx-2 cart-icon-container">
+                    <i class="fas fa-shopping-cart" id="cart-icon"></i>
+                    <span id="cart-badge" class="cart-badge">0</span>
+                </a>
+                <!-- 🧠 Dynamic profile link -->
+                <a href="#" id="profile-link" class="text-white mx-2">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileLink = document.getElementById('profile-link');
+            const loggedInCustomer = JSON.parse(localStorage.getItem('loggedInCustomer'));
+
+            // 🧭 If customer logged in → profile page; otherwise → login
+            if (loggedInCustomer) {
+                profileLink.setAttribute('href', 'customer_profile.html');
+            } else {
+                profileLink.setAttribute('href', 'login.html');
+            }
+        });
+    </script>
+
+
+    <main class="container py-5">
+        <!-- <h1 class="text-center mb-5">Welcome to VibeHive - Style your life, your way</h1> -->
+
+        <!-- <section class="hero-section text-white text-center p-5 mb-5 rounded hero-bg"> -->
+            <!-- <h2 class="text-white">Discover the Latest Vibe: Style & Quality</h2>
+            <p class="lead">Hand-selected products just for you.</p> -->
+            <!-- <a href="product.html" class="btn btn-primary-vibe mt-3"
+                style="background-color: white; color: var(--color-primary); border-color: white;">Shop Now</a>
+        </section> -->
+        <section class="hero-section hero-bg mb-5 rounded">
+
+            <div class="hero-content">
+                <!-- If you want heading & tagline, add here -->
+                <!-- <h2 class="hero-title">VIBEHIVE</h2> -->
+                <!-- <p class="hero-tagline">Style for Every Vibe</p> -->
+            </div>
+
+            <a href="product.html" class="hero-btn">Shop Now</a>
+
+        </section>
+
+
+        <h2 class="text-center mb-4">Featured Categories</h2>
+        <section class="row justify-content-center text-center" id="featured-section">
+
+
+        </section>
+
+    </main>
+
+    <div id="chatbot-modal" class="chatbot-modal">
+        <div class="chatbot-header">
+            <span>AI Chatbot</span>
+            <i class="fas fa-times chatbot-close" onclick="toggleChatbot()"></i>
+        </div>
+        <div class="chatbot-body">
+            <div class="text-muted mb-2">Hello! How can I assist you?</div>
+
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" placeholder="Type a message..." id="chatbot-input">
+            <button onclick="simulateChatResponse()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+    </div>
+
+    <div id="chatbot-icon" class="chatbot-float-icon" onclick="toggleChatbot()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <footer class="footer-vibe mt-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white">Contact Us</h5>
+                    <p class="small">Anarkali Bazar, Bahawalnagar, Pakistan</p>
+                    <p class="small">awaiswattu@gmail.com</p>
+                    <p class="small">+92 42 111 647 428</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white">Information</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Term & conditions</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white">Customer Services</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Order Tracking</a></li>
+                        <li><a href="#">Return & Exchange Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-center mb-0 small mt-3">&copy; 2025 VibeHive. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="dropdown_search.js"></script>
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('http://127.0.0.1:5000/api/featured')
+                .then(response => response.json())
+                .then(data => {
+                    const section = document.getElementById('featured-section');
+                    section.innerHTML = '';
+
+                    if (data.length === 0) {
+                        section.innerHTML = '<p class="w-100">No featured products available right now.</p>';
+                        return;
+                    }
+
+                    data.forEach(product => {
+                        const imageUrl = product.image_path
+                            ? `http://127.0.0.1:5000/uploads/${product.image_path}`
+                            : 'assets/images/default-product.jpg';
+
+                        const card = `
+        <div class="col-md-4 mb-4">
+            <div class="product-card p-3 h-100">
+                <div class="card-title h5">${product.main_category}</div>
+                <div class="category-img-container">
+                    <img src="${imageUrl}" alt="${product.product_name}" class="img-fluid">
+                </div>
+                <p class="h4 text-highlight product-name">${product.product_name} - Rs. ${product.price}</p>
+
+                <a href="product.html?category=${encodeURIComponent(product.main_category)}" 
+                   class="btn btn-primary-vibe mt-2">
+                   View ${product.main_category}
+                </a>
+            </div>
+        </div>
+    `;
+                        section.innerHTML += card;
+                    });
+
+                })
+                .catch(err => {
+                    console.error('Error fetching featured products:', err);
+                });
+        });
+
+    </script>
+
+
+
+    <script>
+        async function sendMessageToChatbot(message) {
+            const loggedInCustomer = JSON.parse(localStorage.getItem("loggedInCustomer"));
+            const customerId = loggedInCustomer ? loggedInCustomer.id : null;
+
+            const response = await fetch("http://127.0.0.1:5000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage, customer_id: customerId })
+            });
+        }
+
+        async function simulateChatResponse() {
+            const input = document.getElementById('chatbot-input');
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+
+            const chatbotBody = document.querySelector('.chatbot-body');
+
+            // --- User message ---
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('user-message');
+            userDiv.textContent = userMessage;
+            chatbotBody.appendChild(userDiv);
+
+            input.value = "";
+
+            // --- Bot typing indicator ---
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('bot-message');
+            loadingDiv.textContent = "Typing...";
+            chatbotBody.appendChild(loadingDiv);
+            chatbotBody.scrollTop = chatbotBody.scrollHeight;
+
+            try {
+                // ✅ Send message to Flask (with or without customer_id)
+                const loggedInCustomer = JSON.parse(localStorage.getItem("loggedInCustomer"));
+                const customerId = loggedInCustomer ? loggedInCustomer.id : null;
+
+                const response = await fetch("http://127.0.0.1:5000/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        customer_id: customerId
+                    })
+                });
+
+                const data = await response.json();
+
+                // --- Replace loading text with chatbot reply ---
+                loadingDiv.innerHTML = data.reply;  // ✅ innerHTML to render links properly
+            } catch (error) {
+                loadingDiv.textContent = "⚠️ Sorry, I couldn’t connect to the server.";
+                console.error("Chatbot error:", error);
+            }
+
+            chatbotBody.scrollTop = chatbotBody.scrollHeight;
+        }
+
+    </script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeHive | Admin Registration</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="adminlogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .register-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-card {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-vibe">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="logo-area h4 mb-0">
+                <img src="images/logo.png" alt="VibeHive Logo"  style="height:50px; width:auto; object-fit:contain;"> 
+            </div>
+            <a href="adminlogin.html" class="text-white mx-2"><i class="fas fa-arrow-left"></i> Back to Login</a>
+        </div>
+    </header>
+
+    <main class="container register-container py-5">
+        <div class="card register-card p-4">
+
+            <h1 class="text-center h3 text-primary mb-4">Admin Registration</h1>
+            <p class="text-muted text-center small mb-4">Create an admin account to manage products and orders.</p>
+
+            <!-- 🔹 Updated form to call real backend -->
+            <form id="admin-register-form" onsubmit="registerAdmin(event)">
+                <div class="form-group">
+                    <label for="admin-name">Full Name</label>
+                    <input type="text" class="form-control" id="admin-name" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-email">Email Address</label>
+                    <input type="email" class="form-control" id="admin-email" required placeholder="Enter email">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-username">Username</label>
+                    <input type="text" class="form-control" id="admin-username" required
+                        placeholder="Create a username">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" class="form-control" id="admin-password" required
+                        placeholder="Create a password">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-confirm-password">Confirm Password</label>
+                    <input type="password" class="form-control" id="admin-confirm-password" required
+                        placeholder="Confirm password">
+                </div>
+
+                <button type="submit" class="btn btn-block mt-4"
+                    style="background-color: var(--color-primary); color: white; padding: 12px;">
+                    <i class="fas fa-user-plus mr-2"></i> Register Admin
+                </button>
+
+                <p class="text-center small mt-3 mb-0">
+                    Already have an account? <a href="adminlogin.html" style="color: var(--color-accent);">Login
+                        here</a>
+                </p>
+            </form>
+
+        </div>
+    </main>
+
+    <div id="toast-notification" class="fixed-top alert d-none"
+        style="top: 80px; right: 20px; width: 300px; z-index: 1000;">
+        <i class="mr-2 fas"></i> <span></span>
+    </div>
+
+    <footer class="footer-vibe">
+        <div class="container py-3 text-center">
+            <p class="mb-0 small">&copy; 2025 VibeHive. Admin Module.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ✅ Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const toastText = toast.querySelector('span');
+            const toastIcon = toast.querySelector('i');
+
+            toastText.textContent = message;
+            if (type === 'error') {
+                toast.style.borderColor = 'red';
+                toastIcon.classList.remove('fa-check-circle');
+                toastIcon.classList.add('fa-exclamation-triangle');
+                toast.classList.add('alert-danger');
+                toast.classList.remove('alert-success');
+            } else {
+                toast.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-accent');
+                toastIcon.classList.remove('fa-exclamation-triangle');
+                toastIcon.classList.add('fa-check-circle');
+                toast.classList.add('alert-success');
+                toast.classList.remove('alert-danger');
+            }
+
+            toast.classList.remove('d-none');
+            setTimeout(() => toast.classList.add('d-none'), 3000);
+        }
+
+        function validateForm(form) {
+            let isValid = true;
+            const inputs = form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.classList.remove('is-invalid');
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+            return isValid;
+        }
+
+        // ✅ Actual Flask API Integration
+        async function registerAdmin(event) {
+            event.preventDefault();
+            const form = document.getElementById('admin-register-form');
+
+            if (!validateForm(form)) {
+                showToast("Please fill all required fields.", 'error');
+                return;
+            }
+
+            const full_name = document.getElementById('admin-name').value.trim();
+            const email = document.getElementById('admin-email').value.trim();
+            const username = document.getElementById('admin-username').value.trim();
+            const password = document.getElementById('admin-password').value.trim();
+            const confirm_password = document.getElementById('admin-confirm-password').value.trim();
+
+            if (password !== confirm_password) {
+                showToast("Passwords do not match.", 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/register", {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        full_name,
+                        email,
+                        username,
+                        password,
+                        confirm_password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = "adminlogin.html";
+                    }, 1500);
+                } else {
+                    showToast(data.message || "Registration failed", 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Server not responding. Check backend.", 'error');
+            }
+        }
+    </script>
+    <script>
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/check_admin_exists");
+        const data = await response.json();
+
+        if (data.exists) {
+            // Replace the entire <main> area with the same centered layout as login
+            document.querySelector("main.container").outerHTML = `
+                <main class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+                    <div class="card login-card p-4 text-center" style="max-width: 420px; width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <h1 class="text-primary h3 mb-3">
+                            <i class="fas fa-user-shield mr-2"></i> Admin Already Exists
+                        </h1>
+                        <p class="text-muted mb-4 small">
+                            An administrator account has already been created for this system.<br>
+                            Please log in to continue managing your store.
+                        </p>
+                        <a href="adminlogin.html" 
+                           class="btn btn-block" 
+                           style="background-color: var(--color-accent); color: white; border-radius: 25px; padding: 12px;">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Go to Login
+                        </a>
+                    </div>
+                </main>
+            `;
+        }
+    } catch (error) {
+        console.error('Error checking admin existence:', error);
+    }
+});
+</script>
+
+
+
+
+</body>
+
+</html>

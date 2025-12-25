@@ -1,0 +1,347 @@
+/* --- VibeHive Muted Emerald & Gold Palette (Sophisticated) --- */
+
+:root {
+    --color-primary: #1F453E;     /* Deep Emerald (Navigation, Footer, Strong Text) */
+    --color-accent: #C2A562;      /* Muted Gold (Buttons, CTAs, Highlight) */
+    --color-background: #F8F8F8;  /* Crisp Off-White (Main Background) */
+    --color-highlight: #C2A562;   /* Muted Gold (Price Text, Important Links) */
+    --color-text: #333333;        /* Dark Charcoal (Body Text) */
+    --color-shadow-primary: rgba(31, 69, 62, 0.4); /* Deep Emerald shadow */
+    --font-family-sans: 'Arial', sans-serif;
+}
+
+/* Global Reset and Body Styling */
+* {
+    box-sizing: border-box;
+    /* Smooth transitions for all elements for micro-animations */
+    transition: all 0.3s ease-in-out; 
+}
+
+body {
+    background-color: var(--color-background); 
+    color: var(--color-text);
+    font-family: var(--font-family-sans);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Typography and Headings */
+h1, h2, h3 {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* --- Navigation & Header --- */
+
+.header-vibe, .footer-vibe {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--color-highlight) !important;
+}
+
+/* Icon Links (Cart, User, Wishlist) */
+.header-vibe a i {
+    font-size: 1.25rem;
+}
+.header-vibe a i:hover {
+    color: var(--color-highlight);
+}
+
+/* Cart Icon Badge */
+.cart-icon-container {
+    position: relative; 
+    display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px; 
+    right: -5px; 
+    background-color: var(--color-highlight); 
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    line-height: 1;
+    min-width: 18px;
+    text-align: center;
+    font-weight: bold;
+    display: none; 
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Search Box Styling */
+.search-box input {
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    padding: 5px 15px;
+}
+.search-box button {
+    margin-left: -35px;
+    z-index: 10;
+    color: var(--color-highlight) !important; 
+}
+
+/* --- Buttons and Call-to-Action --- */
+
+.btn-primary-vibe {
+    background-color: var(--color-accent);
+    color: var(--color-primary); 
+    border: 2px solid var(--color-accent);
+    padding: 10px 25px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary-vibe[style*="background-color: var(--color-primary)"] {
+    color: white !important;
+}
+
+.btn-primary-vibe:hover {
+    background-color: #A08852; 
+    border-color: #A08852;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    color: var(--color-primary); 
+}
+.btn-primary-vibe[style*="background-color: var(--color-primary)"]:hover {
+    background-color: #122B27 !important; 
+    border-color: #122B27 !important;
+    color: white !important;
+}
+
+.text-highlight {
+    color: var(--color-highlight);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* --- Product Cards (Elevated Effect) and Images --- */
+
+.product-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px var(--color-shadow-primary); 
+}
+
+.category-img-container, .product-image-gallery {
+    border-radius: 4px;
+}
+
+.category-img-container {
+    height: 200px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.category-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease-in-out;
+}
+
+.product-card:hover .category-img-container img {
+    transform: scale(1.05);
+}
+
+/* --- Filter Sidebar Links (Product Page specific) --- */
+.filter-link {
+    color: var(--color-text);
+    text-decoration: none;
+    display: block;
+    padding: 3px 0;
+}
+.filter-link:hover, .filter-link.font-weight-bold {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* --- AI Chatbot Floating Icon (Muted Gold Pulse Effect) --- */
+
+@keyframes pulse-acorn {
+    0% { box-shadow: 0 0 0 0 rgba(194, 165, 98, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(194, 165, 98, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(194, 165, 98, 0); }
+}
+
+.chatbot-float-icon {
+    position: fixed;
+    bottom: 30px; 
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-color: var(--color-accent); 
+    color: var(--color-primary); 
+    text-align: center;
+    line-height: 65px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1000;
+    
+    border: 3px solid white; 
+    animation: pulse-acorn 2s infinite ease-in-out;
+}
+
+/* --- Chatbot Modal (Figure 13 implementation) --- */
+.chatbot-modal {
+    display: none; 
+    position: fixed;
+    bottom: 110px; 
+    right: 30px;
+    width: 300px;
+    height: 400px;
+    background-color: white;
+    border: 1px solid var(--color-primary);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.chatbot-header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-close {
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.chatbot-body {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+
+.chatbot-input-area {
+    display: flex;
+    border-top: 1px solid #eee;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.chatbot-input-area input {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 5px 15px;
+    margin-right: 5px;
+}
+
+.chatbot-input-area button {
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0 15px;
+}
+
+
+/* Hero Section Background Style */
+.hero-bg {
+    background-color: var(--color-primary) !important;
+    background-image: url('../images/hero-slide.jpg'); 
+    background-size: cover;
+    background-position: center;
+    min-height: 400px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px; 
+}
+
+.hero-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35); 
+    z-index: 1;
+}
+
+.hero-bg * {
+    z-index: 2;
+}
+
+/* Success Notification Toast Styling */
+#toast-notification {
+    color: var(--color-primary) !important;
+    background-color: #f0f0f0;
+    border: 2px solid var(--color-accent);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* --- Footer --- */
+
+.footer-vibe {
+    font-size: 0.9rem;
+}
+.footer-vibe a {
+    color: white;
+    text-decoration: none;
+}
+.footer-vibe a:hover {
+    color: var(--color-highlight);
+}
+
+/* --- Responsiveness (Chatbot Scaling) --- */
+
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    .header-vibe .search-box {
+        display: none !important; 
+    }
+    .header-vibe .logo-area {
+        font-size: 1.2rem;
+    }
+    .chatbot-float-icon {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 22px;
+        bottom: 20px;
+        right: 20px;
+    }
+    .chatbot-modal {
+        width: 90%;
+        right: 5%;
+        bottom: 80px;
+        height: 300px;
+    }
+}
